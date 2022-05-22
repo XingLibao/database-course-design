@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.lichun.mapper.InstoreMapper">
+    
+    <resultMap type="Instore" id="InstoreResult">
+        <result property="instoreId"    column="instore_id"    />
+        <result property="instoreDate"    column="instore_date"    />
+        <result property="gasId"    column="gas_id"    />
+        <result property="supplierId"    column="supplier_id"    />
+        <result property="purchasePrice"    column="purchase_price"    />
+        <result property="instoreQuantity"    column="instore_quantity"    />
+        <result property="instoreExpenditure"    column="instore_expenditure"    />
+    </resultMap>
+
+    <sql id="selectInstoreVo">
+        select instore_id, instore_date, gas_id, supplier_id, purchase_price, instore_quantity, instore_expenditure from lichun_instore
+    </sql>
+
+    <select id="selectInstoreList" parameterType="Instore" resultMap="InstoreResult">
+        <include refid="selectInstoreVo"/>
+        <where>  
+            <if test="instoreId != null "> and instore_id = #{instoreId}</if>
+            <if test="params.beginInstoreDate != null and params.beginInstoreDate != '' and params.endInstoreDate != null and params.endInstoreDate != ''"> and instore_date between #{params.beginInstoreDate} and #{params.endInstoreDate}</if>
+            <if test="gasId != null "> and gas_id = #{gasId}</if>
+            <if test="supplierId != null "> and supplier_id = #{supplierId}</if>
+            <if test="params.beginPurchasePrice != null and params.beginPurchasePrice != '' and params.endPurchasePrice != null and params.endPurchasePrice != ''"> and purchase_price between #{params.beginPurchasePrice} and #{params.endPurchasePrice}</if>
+            <if test="params.beginInstoreQuantity != null and params.beginInstoreQuantity != '' and params.endInstoreQuantity != null and params.endInstoreQuantity != ''"> and instore_quantity between #{params.beginInstoreQuantity} and #{params.endInstoreQuantity}</if>
+            <if test="params.beginInstoreExpenditure != null and params.beginInstoreExpenditure != '' and params.endInstoreExpenditure != null and params.endInstoreExpenditure != ''"> and instore_expenditure between #{params.beginInstoreExpenditure} and #{params.endInstoreExpenditure}</if>
+        </where>
+    </select>
+    
+    <select id="selectInstoreByInstoreId" parameterType="Integer" resultMap="InstoreResult">
+        <include refid="selectInstoreVo"/>
+        where instore_id = #{instoreId}
+    </select>
+        
+    <insert id="insertInstore" parameterType="Instore" useGeneratedKeys="true" keyProperty="instoreId">
+        insert into lichun_instore
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="instoreDate != null">instore_date,</if>
+            <if test="gasId != null">gas_id,</if>
+            <if test="supplierId != null">supplier_id,</if>
+            <if test="purchasePrice != null">purchase_price,</if>
+            <if test="instoreQuantity != null">instore_quantity,</if>
+            <if test="instoreExpenditure != null">instore_expenditure,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="instoreDate != null">#{instoreDate},</if>
+            <if test="gasId != null">#{gasId},</if>
+            <if test="supplierId != null">#{supplierId},</if>
+            <if test="purchasePrice != null">#{purchasePrice},</if>
+            <if test="instoreQuantity != null">#{instoreQuantity},</if>
+            <if test="instoreExpenditure != null">#{instoreExpenditure},</if>
+         </trim>
+    </insert>
+
+    <update id="updateInstore" parameterType="Instore">
+        update lichun_instore
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="instoreDate != null">instore_date = #{instoreDate},</if>
+            <if test="gasId != null">gas_id = #{gasId},</if>
+            <if test="supplierId != null">supplier_id = #{supplierId},</if>
+            <if test="purchasePrice != null">purchase_price = #{purchasePrice},</if>
+            <if test="instoreQuantity != null">instore_quantity = #{instoreQuantity},</if>
+            <if test="instoreExpenditure != null">instore_expenditure = #{instoreExpenditure},</if>
+        </trim>
+        where instore_id = #{instoreId}
+    </update>
+
+    <delete id="deleteInstoreByInstoreId" parameterType="Integer">
+        delete from lichun_instore where instore_id = #{instoreId}
+    </delete>
+
+    <delete id="deleteInstoreByInstoreIds" parameterType="String">
+        delete from lichun_instore where instore_id in 
+        <foreach item="instoreId" collection="array" open="(" separator="," close=")">
+            #{instoreId}
+        </foreach>
+    </delete>
+
+</mapper>

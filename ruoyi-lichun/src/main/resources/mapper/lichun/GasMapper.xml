@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.lichun.mapper.GasMapper">
+    
+    <resultMap type="Gas" id="GasResult">
+        <result property="gasId"    column="gas_id"    />
+        <result property="name"    column="name"    />
+        <result property="inventory"    column="inventory"    />
+        <result property="purchasePrice"    column="purchase_price"    />
+        <result property="price"    column="price"    />
+    </resultMap>
+
+    <sql id="selectGasVo">
+        select gas_id, name, inventory, purchase_price, price from lichun_gas
+    </sql>
+
+    <select id="selectGasList" parameterType="Gas" resultMap="GasResult">
+        <include refid="selectGasVo"/>
+        <where>  
+            <if test="gasId != null "> and gas_id = #{gasId}</if>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="params.beginInventory != null and params.beginInventory != '' and params.endInventory != null and params.endInventory != ''"> and inventory between #{params.beginInventory} and #{params.endInventory}</if>
+            <if test="params.beginPurchasePrice != null and params.beginPurchasePrice != '' and params.endPurchasePrice != null and params.endPurchasePrice != ''"> and purchase_price between #{params.beginPurchasePrice} and #{params.endPurchasePrice}</if>
+            <if test="params.beginPrice != null and params.beginPrice != '' and params.endPrice != null and params.endPrice != ''"> and price between #{params.beginPrice} and #{params.endPrice}</if>
+        </where>
+    </select>
+    
+    <select id="selectGasByGasId" parameterType="Integer" resultMap="GasResult">
+        <include refid="selectGasVo"/>
+        where gas_id = #{gasId}
+    </select>
+        
+    <insert id="insertGas" parameterType="Gas" useGeneratedKeys="true" keyProperty="gasId">
+        insert into lichun_gas
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null">name,</if>
+            <if test="inventory != null">inventory,</if>
+            <if test="purchasePrice != null">purchase_price,</if>
+            <if test="price != null">price,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null">#{name},</if>
+            <if test="inventory != null">#{inventory},</if>
+            <if test="purchasePrice != null">#{purchasePrice},</if>
+            <if test="price != null">#{price},</if>
+         </trim>
+    </insert>
+
+    <update id="updateGas" parameterType="Gas">
+        update lichun_gas
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null">name = #{name},</if>
+            <if test="inventory != null">inventory = #{inventory},</if>
+            <if test="purchasePrice != null">purchase_price = #{purchasePrice},</if>
+            <if test="price != null">price = #{price},</if>
+        </trim>
+        where gas_id = #{gasId}
+    </update>
+
+    <delete id="deleteGasByGasId" parameterType="Integer">
+        delete from lichun_gas where gas_id = #{gasId}
+    </delete>
+
+    <delete id="deleteGasByGasIds" parameterType="String">
+        delete from lichun_gas where gas_id in 
+        <foreach item="gasId" collection="array" open="(" separator="," close=")">
+            #{gasId}
+        </foreach>
+    </delete>
+
+</mapper>

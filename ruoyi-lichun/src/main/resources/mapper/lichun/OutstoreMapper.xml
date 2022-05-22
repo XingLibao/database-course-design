@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.lichun.mapper.OutstoreMapper">
+    
+    <resultMap type="Outstore" id="OutstoreResult">
+        <result property="outstoreId"    column="outstore_id"    />
+        <result property="outstoreDate"    column="outstore_date"    />
+        <result property="gasId"    column="gas_id"    />
+        <result property="outstoreQuantity"    column="outstore_quantity"    />
+        <result property="outstoreIncome"    column="outstore_income"    />
+        <result property="staffId"    column="staff_id"    />
+        <result property="clientId"    column="client_id"    />
+    </resultMap>
+
+    <sql id="selectOutstoreVo">
+        select outstore_id, outstore_date, gas_id, outstore_quantity, outstore_income, staff_id, client_id from lichun_outstore
+    </sql>
+
+    <select id="selectOutstoreList" parameterType="Outstore" resultMap="OutstoreResult">
+        <include refid="selectOutstoreVo"/>
+        <where>  
+            <if test="outstoreId != null "> and outstore_id = #{outstoreId}</if>
+            <if test="params.beginOutstoreDate != null and params.beginOutstoreDate != '' and params.endOutstoreDate != null and params.endOutstoreDate != ''"> and outstore_date between #{params.beginOutstoreDate} and #{params.endOutstoreDate}</if>
+            <if test="gasId != null "> and gas_id = #{gasId}</if>
+            <if test="params.beginOutstoreQuantity != null and params.beginOutstoreQuantity != '' and params.endOutstoreQuantity != null and params.endOutstoreQuantity != ''"> and outstore_quantity between #{params.beginOutstoreQuantity} and #{params.endOutstoreQuantity}</if>
+            <if test="params.beginOutstoreIncome != null and params.beginOutstoreIncome != '' and params.endOutstoreIncome != null and params.endOutstoreIncome != ''"> and outstore_income between #{params.beginOutstoreIncome} and #{params.endOutstoreIncome}</if>
+            <if test="staffId != null "> and staff_id = #{staffId}</if>
+            <if test="clientId != null "> and client_id = #{clientId}</if>
+        </where>
+    </select>
+    
+    <select id="selectOutstoreByOutstoreId" parameterType="Integer" resultMap="OutstoreResult">
+        <include refid="selectOutstoreVo"/>
+        where outstore_id = #{outstoreId}
+    </select>
+        
+    <insert id="insertOutstore" parameterType="Outstore" useGeneratedKeys="true" keyProperty="outstoreId">
+        insert into lichun_outstore
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="outstoreDate != null">outstore_date,</if>
+            <if test="gasId != null">gas_id,</if>
+            <if test="outstoreQuantity != null">outstore_quantity,</if>
+            <if test="outstoreIncome != null">outstore_income,</if>
+            <if test="staffId != null">staff_id,</if>
+            <if test="clientId != null">client_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="outstoreDate != null">#{outstoreDate},</if>
+            <if test="gasId != null">#{gasId},</if>
+            <if test="outstoreQuantity != null">#{outstoreQuantity},</if>
+            <if test="outstoreIncome != null">#{outstoreIncome},</if>
+            <if test="staffId != null">#{staffId},</if>
+            <if test="clientId != null">#{clientId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateOutstore" parameterType="Outstore">
+        update lichun_outstore
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="outstoreDate != null">outstore_date = #{outstoreDate},</if>
+            <if test="gasId != null">gas_id = #{gasId},</if>
+            <if test="outstoreQuantity != null">outstore_quantity = #{outstoreQuantity},</if>
+            <if test="outstoreIncome != null">outstore_income = #{outstoreIncome},</if>
+            <if test="staffId != null">staff_id = #{staffId},</if>
+            <if test="clientId != null">client_id = #{clientId},</if>
+        </trim>
+        where outstore_id = #{outstoreId}
+    </update>
+
+    <delete id="deleteOutstoreByOutstoreId" parameterType="Integer">
+        delete from lichun_outstore where outstore_id = #{outstoreId}
+    </delete>
+
+    <delete id="deleteOutstoreByOutstoreIds" parameterType="String">
+        delete from lichun_outstore where outstore_id in 
+        <foreach item="outstoreId" collection="array" open="(" separator="," close=")">
+            #{outstoreId}
+        </foreach>
+    </delete>
+
+</mapper>

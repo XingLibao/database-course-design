@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.lichun.mapper.StaffMapper">
+    
+    <resultMap type="Staff" id="StaffResult">
+        <result property="staffId"    column="staff_id"    />
+        <result property="name"    column="name"    />
+        <result property="sex"    column="sex"    />
+        <result property="age"    column="age"    />
+        <result property="phoneNumber"    column="phone_number"    />
+        <result property="address"    column="address"    />
+    </resultMap>
+
+    <sql id="selectStaffVo">
+        select staff_id, name, sex, age, phone_number, address from lichun_staff
+    </sql>
+
+    <select id="selectStaffList" parameterType="Staff" resultMap="StaffResult">
+        <include refid="selectStaffVo"/>
+        <where>  
+            <if test="staffId != null "> and staff_id = #{staffId}</if>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="sex != null "> and sex = #{sex}</if>
+            <if test="params.beginAge != null and params.beginAge != '' and params.endAge != null and params.endAge != ''"> and age between #{params.beginAge} and #{params.endAge}</if>
+            <if test="phoneNumber != null  and phoneNumber != ''"> and phone_number = #{phoneNumber}</if>
+            <if test="address != null  and address != ''"> and address like concat('%', #{address}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectStaffByStaffId" parameterType="Integer" resultMap="StaffResult">
+        <include refid="selectStaffVo"/>
+        where staff_id = #{staffId}
+    </select>
+        
+    <insert id="insertStaff" parameterType="Staff" useGeneratedKeys="true" keyProperty="staffId">
+        insert into lichun_staff
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null">name,</if>
+            <if test="sex != null">sex,</if>
+            <if test="age != null">age,</if>
+            <if test="phoneNumber != null">phone_number,</if>
+            <if test="address != null">address,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null">#{name},</if>
+            <if test="sex != null">#{sex},</if>
+            <if test="age != null">#{age},</if>
+            <if test="phoneNumber != null">#{phoneNumber},</if>
+            <if test="address != null">#{address},</if>
+         </trim>
+    </insert>
+
+    <update id="updateStaff" parameterType="Staff">
+        update lichun_staff
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null">name = #{name},</if>
+            <if test="sex != null">sex = #{sex},</if>
+            <if test="age != null">age = #{age},</if>
+            <if test="phoneNumber != null">phone_number = #{phoneNumber},</if>
+            <if test="address != null">address = #{address},</if>
+        </trim>
+        where staff_id = #{staffId}
+    </update>
+
+    <delete id="deleteStaffByStaffId" parameterType="Integer">
+        delete from lichun_staff where staff_id = #{staffId}
+    </delete>
+
+    <delete id="deleteStaffByStaffIds" parameterType="String">
+        delete from lichun_staff where staff_id in 
+        <foreach item="staffId" collection="array" open="(" separator="," close=")">
+            #{staffId}
+        </foreach>
+    </delete>
+
+</mapper>
